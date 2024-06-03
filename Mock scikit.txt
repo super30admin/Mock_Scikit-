@@ -1,0 +1,108 @@
+Mock scikit:
+
+
+
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier
+
+
+data = pd.read_csv("telco-customer-churn.csv")
+
+
+#print(data.isnull().any())
+#print(data.head())
+
+# Handle missing values in 'TotalCharges'
+data['TotalCharges'] = pd.to_numeric(data['TotalCharges'], errors='coerce')
+median_total_charges = data['TotalCharges'].median()
+data['TotalCharges'].fillna(median_total_charges, inplace=True)
+
+
+#encode
+le= LabelEncoder()
+data['gender']= le.fit_transform(data['gender'])
+data['SeniorCitizen']= le.fit_transform(data['SeniorCitizen'])
+data['Partner']= le.fit_transform(data['Partner'])
+data['Dependents']= le.fit_transform(data['Dependents'])
+data['PhoneService']= le.fit_transform(data['PhoneService'])
+data['MultipleLines']= le.fit_transform(data['MultipleLines'])
+data['InternetService']= le.fit_transform(data['InternetService'])
+data['OnlineSecurity']= le.fit_transform(data['OnlineSecurity'])
+data['OnlineBackup']= le.fit_transform(data['OnlineBackup'])
+data['tenure']= le.fit_transform(data['tenure'])
+data['DeviceProtection']= le.fit_transform(data['DeviceProtection'])
+data['TechSupport']= le.fit_transform(data['TechSupport'])
+data['StreamingTV']= le.fit_transform(data['StreamingTV'])
+data['StreamingMovies']= le.fit_transform(data['StreamingMovies'])
+data['Contract']= le.fit_transform(data['Contract'])
+data['PaperlessBilling']= le.fit_transform(data['PaperlessBilling'])
+data['PaymentMethod']= le.fit_transform(data['PaymentMethod'])
+data['Churn']= le.fit_transform(data['Churn'])
+
+
+#loading data
+X= data.iloc[:,1:20].values
+y= data.iloc[:,20:21].values
+
+
+#split data
+X_train,X_test,y_train,y_test= train_test_split(X,y,test_size=0.3, random_state=42)
+
+#scalar handling
+scalar = StandardScaler()
+X_train_scalar = scalar.fit_transform(X_train)
+X_test_scalar = scalar.transform(X_test)
+
+y_train = y_train.reshape(-1)
+y_test = y_test.reshape(-1)
+
+#knn
+neigh= KNeighborsClassifier(n_neighbors =5)
+KNN=neigh.fit(X_train_scalar,y_train)
+y_knn= KNN.predict(X_test_scalar)
+a_knn = accuracy_score(y_knn,y_test)
+print("KNN:", a_knn)
+
+
+
+# rf
+rfc =RandomForestClassifier(n_estimators=100, random_state=42)
+rfcd = rfc.fit(X_train_scalar,y_train)
+y_rf= rfcd.predict(X_test_scalar)
+a_rf = accuracy_score(y_rf,y_test)
+print("Random Forest:", a_rf)
+
+
+# lg
+lg =LogisticRegression()
+lgd = lg.fit(X_train_scalar,y_train)
+y_lg= lgd.predict(X_test_scalar)
+a_lg = accuracy_score(y_lg,y_test)
+print("Logistic Regression:", a_lg)
+
+
+
+# svc
+sv =SVC(kernel='linear',C=1)
+svd = sv.fit(X_train_scalar,y_train)
+y_sv= svd.predict(X_test_scalar)
+a_sv = accuracy_score(y_sv,y_test)
+print("SVC", a_sv)
+
+
+
+
+
+
+o/p:
+
+KNN: 0.7524846190250828
+Random Forest: 0.8002839564600095
+Logistic Regression: 0.8106956933270232
+SVC 0.8045433033601515
