@@ -53,3 +53,44 @@ from sklearn.preprocessing import StandardScaler
 scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+
+# Train multiple models
+models = {
+    "Logistic Regression": LogisticRegression(),
+    "Random Forest": RandomForestClassifier(),
+    "KNN": KNeighborsClassifier(),
+    "SVM": SVC(probability=True)
+}
+
+for name, model in models.items():
+    model.fit(X_train_scaled, y_train)
+from sklearn.metrics import classification_report, roc_auc_score
+
+# Evaluate models
+for name, model in models.items():
+    y_pred = model.predict(X_test_scaled)
+    print(f"{name}:\n{classification_report(y_test, y_pred)}")
+    print(f"ROC-AUC Score: {roc_auc_score(y_test, model.predict_proba(X_test_scaled)[:, 1])}\n")
+import joblib
+
+# Save the selected best model
+best_model = RandomForestClassifier()  # Example
+best_model.fit(X_train_scaled, y_train)
+joblib.dump(best_model, "Best_Churn_Model.pkl")
+git clone https://github.com/your-username/churn-prediction.git
+cd churn-prediction
+pip install -r requirements.txt
+python churn_prediction.py
+
+---
+
+### Instructions:
+1. Replace `your-username` with your GitHub username in the `git clone` command.
+2. Create a `requirements.txt` file with the necessary Python libraries (e.g., `pandas`, `scikit-learn`, `joblib`).
+3. Place this script in your `README.md` file to make it informative and visually appealing.
+
